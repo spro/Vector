@@ -1,0 +1,6 @@
+# view AndroidManifest.xml #generated:19
+-keep class com.sprobertson.vector.DisplayMessageActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:12
+-keep class com.sprobertson.vector.MainActivity { <init>(...); }
+

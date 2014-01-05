@@ -1,0 +1,22 @@
+/home/sean/Vector/bin/classes.dex : \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/R$menu.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/ZSocketClient.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/MainActivity$connectTask.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/DisplayMessageActivity.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/MessagesAdapter.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/ZSocketClient$ZSocketSendTask.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/MainActivity.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/BuildConfig.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/ZSocketClient$1.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/R$style.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/ZSocketClient$OnMessageReceived.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/R$layout.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/R.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/R$string.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/R$id.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/R$attr.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/MainActivity$connectTask$1.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/MainActivity$1.class \
+/home/sean/Vector/bin/classes/com/sprobertson/vector/R$drawable.class \
+/home/sean/Vector/bin/dexedLibs/jeromq-0.3.0-SNAPSHOT-4f6212cfa7b9bbc8145cdf4f7b3331b5.jar \
+/home/sean/Vector/bin/dexedLibs/android-support-v4-07f29a30f6975b67d50827eccca5f139.jar \
