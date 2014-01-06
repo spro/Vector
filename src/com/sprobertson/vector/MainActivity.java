@@ -40,6 +40,10 @@ public class MainActivity extends Activity
         adapter = new MessagesAdapter(this, arrayList);
         list.setAdapter(adapter);
 
+        // Start up broadcast service
+        startService(new Intent(this, UDPBroadcastService.class));
+
+        // Start up ZSocket server connection
         new connectTask().execute("");
 
         send.setOnClickListener(new View.OnClickListener() {
@@ -57,6 +61,7 @@ public class MainActivity extends Activity
                 editText.setText("");
             }
         });
+
     }
 
     public class connectTask extends AsyncTask<String, String, ZSocketClient> {
@@ -64,8 +69,8 @@ public class MainActivity extends Activity
         protected ZSocketClient doInBackground(String... message) {
             client = new ZSocketClient(new ZSocketClient.OnMessageReceived() {
                 @Override
-                public void messageReceived(String message) {
-                    publishProgress(message);
+                public void messageReceived(String sender, String message) {
+                    publishProgress(sender + ": " + message);
                 }
             });
             client.run();
