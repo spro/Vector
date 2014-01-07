@@ -18,7 +18,7 @@ public class Peer {
     }
 
     public String toString() {
-        return "My name is fred... " + uuid;
+        return uuid + "<:" + Integer.toString(port) + ">";
     }
 }
 
