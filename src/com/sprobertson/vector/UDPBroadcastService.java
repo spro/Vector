@@ -21,12 +21,16 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class UDPBroadcastService extends Service {
+    public static final String PEER_JOIN = "com.sprobertson.vector.PEER_JOIN";
+    public static final String PEER_JOIN_UUID = "com.sprobertson.vector.PEER_JOIN_UUID";
+    public static final String PEER_JOIN_ADDRESS = "com.sprobertson.vector.PEER_JOIN_ADDRESS";
+
     public static final long BROADCAST_INTERVAL = 1000; // ms
+    public static final short BROADCAST_PORT = 5670;
+    public static InetAddress BROADCAST_ADDRESS;
 
     private DatagramSocket bsocket;
     private ArrayList<String> seen_uuids = new ArrayList<String>();
-    private static final UUID uuid = UUID.randomUUID();
-    private static final short port = 5595;
 
     private Handler loopHandler = new Handler();
     private Timer loopTimer = null;
@@ -40,10 +44,12 @@ public class UDPBroadcastService extends Service {
     public void onCreate() {
         try {
             // Create UDP socket
+            BROADCAST_ADDRESS = InetAddress.getByName("255.255.255.255");
             bsocket = new DatagramSocket(5670);
             bsocket.setBroadcast(true);
+            Log.i("Vector.UDPBroadcastService.onCreate", "Set stuff up");
         } catch (Exception e) {
-            // TODO: Handle socket creation error
+            Log.e("Vector.UDPBroadcastService.onCreate", "Error creating UDP socket", e);
         }
 
         // Create broadcast task
@@ -60,16 +66,18 @@ public class UDPBroadcastService extends Service {
     Runnable udpListener = new Runnable () {
         @Override
         public void run() {
+            Log.i("Vector.UDPBroadcastService.udpListener", "UDP should be listening");
             try {
                 while (true) {
                     byte[] recv_buf = new byte[255];
                     DatagramPacket packet = new DatagramPacket(recv_buf, recv_buf.length);
                     bsocket.receive(packet);
-                    parseBeacon(packet.getData());
+                    parseBeacon(packet.getAddress().getHostAddress(), packet.getData());
+                    Log.i("Vector.UDPBroadcastService.udpListener", "Receiving...");
                 }
             } catch (Exception e) {
                 // TODO: Handle socket read error
-                Log.e("Reading error", "errr", e);
+                Log.e("Vector UDP read error", "errr", e);
             }
         }
     };
@@ -99,13 +107,11 @@ public class UDPBroadcastService extends Service {
     // Broadcast a presence beacon
     public void sendBeacon() {
         try {
-            InetAddress address = InetAddress.getByName("255.255.255.255");
             byte[] beacon = buildBeacon();
-            DatagramPacket packet = new DatagramPacket(beacon, beacon.length, address, 5670);
-            //bsocket.connect(address, 5670);
+            DatagramPacket packet = new DatagramPacket(beacon, beacon.length, BROADCAST_ADDRESS, 5670);
             bsocket.send(packet);
         } catch (Exception e) {
-            Log.e("Announce", "Error", e);
+            Log.e("Vector UDP sendBeacon", "Error", e);
         }   
     }
 
@@ -115,10 +121,10 @@ public class UDPBroadcastService extends Service {
         ByteBuffer bb = ByteBuffer.wrap(buffer);
         bb.put("ZRE".getBytes());
         bb.putInt(1);
-        bb.putLong(4, uuid.getMostSignificantBits());
-        bb.putLong(12, uuid.getLeastSignificantBits());
+        bb.putLong(4, getVector().uuid.getMostSignificantBits());
+        bb.putLong(12, getVector().uuid.getLeastSignificantBits());
         bb.order(ByteOrder.nativeOrder());
-        bb.putShort(20, port);
+        bb.putShort(20, getVector().port);
         return bb.array();
     }
 
@@ -135,8 +141,7 @@ public class UDPBroadcastService extends Service {
     }
 
     // Parse incoming presence beacons for protocol and identity
-    public void parseBeacon(byte[] beacon) {
-        Log.e("Got beacon", "eh");
+    public void parseBeacon(String address, byte[] beacon) {
         ByteBuffer bb = ByteBuffer.wrap(beacon);
         byte[] _header = new byte[3];
         byte[] _version = new byte[1];
@@ -148,16 +153,27 @@ public class UDPBroadcastService extends Service {
         String uuid = new String(bytesToHex(_uuid));
         bb.order(ByteOrder.nativeOrder());
         int port = (int)bb.getChar();
-        Log.e("Header", new String(_header)); 
-        Log.e("Version", new String(Integer.toString(version))); 
-        Log.e("UUID", uuid); 
-        Log.e("Port", new String(Integer.toString(port)));
+        if (true) Log.e("Vector UDP parseBeacon Parsed Beacon",
+            new String(_header) + " : " +
+            new String(Integer.toString(version)) + " : " +
+            uuid + " : " +
+            new String(Integer.toString(port))
+        );
 
         if (!seen_uuids.contains(uuid)) {
             seen_uuids.add(uuid);
-            Peer newPeer = new Peer(uuid, port);
-            Log.e("This is new:", newPeer.toString());
+            Peer new_peer = new Peer(uuid, port);
+            Log.e("Vector UDP New Peer", new_peer.toString());
+            Intent intent = new Intent(UDPBroadcastService.PEER_JOIN);
+            intent.putExtra(UDPBroadcastService.PEER_JOIN_UUID, uuid);
+            intent.putExtra(UDPBroadcastService.PEER_JOIN_ADDRESS, address + ":" + Integer.toString(port));
+            sendBroadcast(intent);
         }
+    }
+
+    // Slight shortcut for getting at global app variables
+    private VectorApplication getVector() {
+        return (VectorApplication)getApplication();
     }
 
 }
