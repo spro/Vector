@@ -10,17 +10,17 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class MessagesAdapter extends BaseAdapter {
-    private ArrayList<String> listItems;
+    private ArrayList<VectorMessage> messages;
     private LayoutInflater layoutInflater;
 
-    public MessagesAdapter(Context context, ArrayList<String> arrayList) {
-        listItems = arrayList;
+    public MessagesAdapter(Context context, ArrayList<VectorMessage> messages) {
+        this.messages = messages;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public int getCount() {
-        return listItems.size();
+        return messages.size();
     }
 
     @Override
@@ -39,14 +39,15 @@ public class MessagesAdapter extends BaseAdapter {
             view = layoutInflater.inflate(R.layout.list_item, null);
         }
 
-        String stringItem = listItems.get(position);
-        if (stringItem != null) {
-            TextView itemName = (TextView) view.findViewById(R.id.list_item_text_view);
+        TextView message_sender_view = (TextView) view.findViewById(R.id.message_sender);
+        TextView message_body_view = (TextView) view.findViewById(R.id.message_body);
+        TextView message_time_view = (TextView) view.findViewById(R.id.message_time);
 
-            if (itemName != null) {
-                itemName.setText(stringItem);
-            }
-        }
+        VectorMessage message = messages.get(position);
+
+        message_sender_view.setText(message.sender);
+        message_body_view.setText(message.body);
+        message_time_view.setText(message.time);
 
         return view;
     }
