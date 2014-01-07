@@ -1,7 +1,5 @@
 # Vector
 
----
-
 An attempt at an [edgenet](http://theedge.es/) messaging app.
 
 ---
